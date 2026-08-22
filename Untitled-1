@@ -1,0 +1,64 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard - Confraternização da Pelada</title><script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<style>
+:root{--bg:#07140f;--p:#0d2119;--p2:#10291f;--g:#25c46a;--gt:#7df2a8;--t:#f4fff8;--m:#9ab5a5;--l:#244837}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#06110c,#0b2118);color:var(--t)}.c{max-width:1400px;margin:auto;padding:28px 20px 50px}.head{display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap;margin-bottom:24px}h1{margin:0;font-size:clamp(28px,4vw,44px)}.sub{color:var(--m);margin-top:8px}.badge{background:#123b28;color:var(--gt);padding:10px 14px;border-radius:999px;border:1px solid var(--l)}.filters,.panel,.card{background:var(--p);border:1px solid var(--l);border-radius:18px}.filters{padding:16px;margin-bottom:20px;display:flex;gap:12px;flex-wrap:wrap;align-items:end}label{font-size:13px;color:var(--m)}select,button{margin-top:5px;padding:10px 12px;border-radius:10px;border:1px solid var(--l);font-size:15px}select{background:#08150f;color:var(--t);min-width:210px}button{background:var(--g);color:#042111;border:0;font-weight:bold;cursor:pointer}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px}.card{padding:20px;background:linear-gradient(180deg,var(--p2),var(--p))}.lab{color:var(--m);font-size:14px}.val{font-size:clamp(26px,3vw,38px);font-weight:800;margin-top:10px}.small{color:var(--gt);margin-top:8px;font-size:14px}.grid{display:grid;grid-template-columns:1.05fr .95fr;gap:16px;margin-bottom:20px}.panel{padding:14px}h2{font-size:18px;margin:8px 8px 10px}.chart{height:360px;width:100%}.tw{overflow:auto}table{width:100%;border-collapse:collapse;min-width:850px}th,td{padding:12px 10px;text-align:center;border-bottom:1px solid var(--l)}th{background:#10291f;color:var(--gt)}td:first-child,th:first-child{text-align:left;font-weight:700}.paid{color:#b7ffd0;font-weight:700}.zero{color:#536d5f}.tr{background:#123b28;font-weight:800}.foot{color:var(--m);text-align:center;margin-top:20px;font-size:13px}@media(max-width:850px){.cards,.grid{grid-template-columns:1fr}}
+</style></head><body><div class="c">
+<div class="head"><div><h1>⚽ Confraternização da Pelada</h1><div class="sub">Dashboard interativo de pagamentos e faturamento</div></div><div class="badge">Dados da planilha</div></div>
+<div class="filters"><div><label>Mês</label><br><select id="mf"></select></div><div><label>Jogador</label><br><select id="pf"></select></div><button onclick="reset()">Limpar filtros</button></div>
+<div class="cards"><div class="card"><div class="lab">Faturamento total arrecadado</div><div class="val" id="total"></div><div class="small">Todos os pagamentos registrados</div></div><div class="card"><div class="lab">Mês(es) com maior pagamento</div><div class="val" id="best"></div><div class="small" id="bestv"></div></div><div class="card"><div class="lab">Jogadores com pagamento</div><div class="val" id="payers"></div><div class="small">Considerando o filtro selecionado</div></div></div>
+<div class="grid"><div class="panel"><h2>Faturamento por mês</h2><div id="bar" class="chart"></div></div><div class="panel"><h2>Participação no faturamento</h2><div id="pie" class="chart"></div></div></div>
+<div class="panel"><h2>Pagamento mês a mês por jogador</h2><div class="tw"><table><thead><tr id="th"></tr></thead><tbody id="tb"></tbody></table></div></div><div class="foot">Dashboard interativo • Confraternização da Pelada</div></div>
+<script>
+const data=[{"nome": "Binho", "maio": 25.0, "junho": 25.0, "julho": 0.0, "agosto": 0.0, "setembro": 0.0, "outubro": 0.0, "total": 50.0}, {"nome": "David", "maio": 25.0, "junho": 25.0, "julho": 25.0, "agosto": 0.0, "setembro": 0.0, "outubro": 0.0, "total": 75.0}, {"nome": "João Pedro", "maio": 25.0, "junho": 25.0, "julho": 25.0, "agosto": 0.0, "setembro": 0.0, "outubro": 0.0, "total": 75.0}, {"nome": "Lucas Tenorio", "maio": 25.0, "junho": 25.0, "julho": 0.0, "agosto": 0.0, "setembro": 0.0, "outubro": 0.0, "total": 50.0}, {"nome": "Mácio", "maio": 0.0, "junho": 0.0, "julho": 0.0, "agosto": 0.0, "setembro": 0.0, "outubro": 0.0, "total": 0.0}, {"nome": "Mauro", "maio": 0.0, "junho": 0.0, "julho": 0.0, "agosto": 0.0, "setembro": 0.0, "outubro": 0.0, "total": 0.0}, {"nome": "Neto", "maio": 25.0, "junho": 25.0, "julho": 0.0, "agosto": 0.0, "setembro": 0.0, "outubro": 0.0, "total": 50.0}, {"nome": "Yure", "maio": 0.0, "junho": 0.0, "julho": 0.0, "agosto": 0.0, "setembro": 0.0, "outubro": 0.0, "total": 0.0}, {"nome": "Zé", "maio": 25.0, "junho": 25.0, "julho": 25.0, "agosto": 0.0, "setembro": 0.0, "outubro": 0.0, "total": 75.0}, {"nome": "Lucas Vasconcelos", "maio": 25.0, "junho": 25.0, "julho": 25.0, "agosto": 0.0, "setembro": 0.0, "outubro": 0.0, "total": 75.0}, {"nome": "Vinicius(Ryot)", "maio": 25.0, "junho": 25.0, "julho": 25.0, "agosto": 0.0, "setembro": 0.0, "outubro": 0.0, "total": 75.0}, {"nome": "Rodrigo", "maio": 0.0, "junho": 0.0, "julho": 0.0, "agosto": 0.0, "setembro": 0.0, "outubro": 0.0, "total": 0.0}], months=["maio", "junho", "julho", "agosto", "setembro", "outubro"];
+const fmt=v=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(v), cap=s=>s[0].toUpperCase()+s.slice(1);
+const mf=document.getElementById('mf'),pf=document.getElementById('pf');
+mf.innerHTML='<option value="all">Todos os meses</option>'+months.map(m=>`<option value="${m}">${cap(m)}</option>`).join('');
+pf.innerHTML='<option value="all">Todos os jogadores</option>'+data.map(r=>`<option value="${r.nome}">${r.nome}</option>`).join('');
+function rows(){let m=mf.value,p=pf.value;return data.filter(r=>p==='all'||r.nome===p).map(r=>{let x={...r};if(m!=='all'){months.forEach(k=>{if(k!==m)x[k]=0});x.total=x[m]||0}return x})}
+function render(){let m=mf.value,rs=rows(),ts=months.map(k=>rs.reduce((a,r)=>a+(+r[k]||0),0)),tot=ts.reduce((a,b)=>a+b,0),max=Math.max(...ts),bm=months.filter((k,i)=>ts[i]===max&&max>0).map(cap);
+document.getElementById('total').textContent=fmt(tot);document.getElementById('best').textContent=bm.length?bm.join(' e '):'—';document.getElementById('bestv').textContent=bm.length?fmt(max):'Sem pagamentos';document.getElementById('payers').textContent=rs.filter(r=>r.total>0).length;
+Plotly.react('bar',[{x:months.map(cap),y:ts,type:'bar',hovertemplate:'%{x}<br><b>R$ %{y:.2f}</b><extra></extra>'}],{paper_bgcolor:'transparent',plot_bgcolor:'transparent',font:{color:'#f4fff8'},margin:{l:55,r:20,t:20,b:45},yaxis:{gridcolor:'#244837',tickprefix:'R$ '},xaxis:{gridcolor:'transparent'}},{responsive:true,displayModeBar:false});
+let pt=rs.map(r=>({n:r.nome,v:r.total})).filter(x=>x.v>0);Plotly.react('pie',[{labels:pt.map(x=>x.n),values:pt.map(x=>x.v),type:'pie',hole:.55,textinfo:'label+percent',hovertemplate:'%{label}<br>R$ %{value:.2f}<extra></extra>'}],{paper_bgcolor:'transparent',font:{color:'#f4fff8'},margin:{l:10,r:10,t:20,b:20},legend:{orientation:'h',y:-.15}},{responsive:true,displayModeBar:false});
+let vm=m==='all'?months:[m];document.getElementById('th').innerHTML='<th>Jogador</th>'+vm.map(k=>`<th>${cap(k)}</th>`).join('')+'<th>Total</th>';
+let body=rs.map(r=>'<tr><td>'+r.nome+'</td>'+vm.map(k=>{let v=+r[k]||0;return `<td class="${v?'paid':'zero'}">${v?fmt(v):'—'}</td>`}).join('')+`<td class="paid">${r.total?fmt(r.total):'—'}</td></tr>`).join('');
+let tc=vm.map(k=>`<td class="paid">${fmt(ts[months.indexOf(k)])}</td>`).join('');document.getElementById('tb').innerHTML=body+`<tr class="tr"><td>TOTAL</td>${tc}<td>${fmt(tot)}</td></tr>`;}
+function reset(){mf.value='all';pf.value='all';render()}mf.onchange=render;pf.onchange=render;render();
+</script><!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
+</body></html>
