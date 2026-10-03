@@ -17,11 +17,11 @@
       --bg-page: #0b0f17;       /* Fundo principal azul-grafite */
       --bg-panel: #151c28;      /* Cartões e containers */
       --bg-panel-h: #1e293b;    /* Destaques, cabeçalhos e hovers */
-      --g: #38bdf8;             /* Azul Ciano (Valores e Destaques Principais) */
+      --g: #38bdf8;              /* Azul Ciano (Valores e Destaques Principais) */
       --gt: #7dd3fc;            /* Azul Claro (Subtítulos e Indicadores) */
-      --t: #f8fafc;             /* Texto Principal (Branco Gelo) */
-      --m: #94a3b8;             /* Texto Secundário (Cinza Slate) */
-      --l: #26334d;             /* Bordas e Divisórias */
+      --t: #f8fafc;              /* Texto Principal (Branco Gelo) */
+      --m: #94a3b8;              /* Texto Secundário (Cinza Slate) */
+      --l: #26334d;              /* Bordas e Divisórias */
       --accent: #0284c7;        /* Azul Oceano (Botões e Ações) */
       --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
     }
@@ -176,7 +176,7 @@
       display: grid;
       grid-template-columns: 1.2fr 0.8fr;
       gap: 20px;
-      margin-bottom: 45px; /* Espaçamento de respiro para a tabela */
+      margin-bottom: 45px;
     }
 
     .chart-p {
@@ -530,12 +530,26 @@
 
   async function updatePayment(rowId, month, value) {
     let val = parseFloat(value) || 0;
+
+    // 1. Atualização Instantânea no Estado Local (Memória)
+    let item = dbData.find(d => d.id === rowId);
+    if (item) {
+      item[month] = val;
+      render(); // Redesenha os gráficos e a tabela imediatamente
+    }
+
+    // 2. Persistência no Banco de Dados Supabase
     let { error } = await supaClient.from('pelada_dados').update({ [month]: val }).eq('id', rowId);
-    if (error) showToast("Erro ao salvar pagamento", "e");
+    if (error) {
+      showToast("Erro ao salvar pagamento", "e");
+      fetchFromSupa(true); // Recarrega se falhar a gravação
+    } else {
+      showToast("Pagamento salvo com sucesso!");
+    }
   }
 
   async function quickAdd(rowId, month, currentVal, addVal) {
-    let val = (parseFloat(currentVal) || 0) + addVal;
+    let val = (parseFloat(currentVal) || 0) + parseFloat(addVal);
     await updatePayment(rowId, month, val);
   }
 
